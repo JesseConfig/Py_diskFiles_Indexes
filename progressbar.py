@@ -1,8 +1,6 @@
-# -*- coding: UTF-8 -*-
 from tkinter import *
 from tkinter import ttk
 
-#在扫描时弹出一个进度条窗口
 
 class GressBar:
 

@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 from tkinter import *
 from tkinter import ttk
 import tkinter.filedialog as dir
@@ -8,7 +6,7 @@ import threading
 import progressbar
 import disk
 from database import DataMgr
-
+import win32api
 
 class SearchUI:
 
@@ -75,6 +73,10 @@ class SearchUI:
 
         self.gress_bar.start()
 
+    def cr(self):
+        self.data_mgr.clear_db()
+        print("clear OK")
+
     # 菜单绘制
     def create_menu(self, root):
         menu = Menu(root)  # 创建菜单
@@ -84,9 +86,10 @@ class SearchUI:
         file_menu.add_command(label='设置路径', command=self.open_dir)
         file_menu.add_separator()
         file_menu.add_command(label='扫描', command=self.execute_asyn)
+        file_menu.add_command(label='清除數據', command=self.cr)
 
         about_menu = Menu(menu, tearoff=0)
-        about_menu.add_command(label='version1.0')
+        about_menu.add_command(label='version1.1')
 
         # 在菜单栏中添加菜单
         menu.add_cascade(label='文件', menu=file_menu)
@@ -104,6 +107,7 @@ class SearchUI:
         self.search_key = StringVar()
         ttk.Entry(top_frame, textvariable=self.search_key, width=50).pack(fill=X, expand=YES, side=LEFT)
         ttk.Button(top_frame, text="搜索", command=self.search_file).pack(padx=15, fill=X, expand=YES)
+        ttk.Button(top_frame, text="GET", command=self.get_list).pack(padx=15, fill=X, expand=YES)
 
         bottom_frame = Frame(lf)
         bottom_frame.pack(fill=BOTH, expand=YES, side=TOP, padx=15, pady=8)
@@ -114,6 +118,8 @@ class SearchUI:
         self.list_val = StringVar()
         listbox = Listbox(band, listvariable=self.list_val, height=18)
         listbox.pack(side=LEFT, fill=X, expand=YES)
+
+        ttk.Button(top_frame, text="GETT", command=lambda x=listbox: self.search_key.set(x.get("active"))).pack(padx=15,fill=X,expand=YES)
 
         vertical_bar = ttk.Scrollbar(band, orient=VERTICAL, command=listbox.yview)
         vertical_bar.pack(side=RIGHT, fill=Y)
@@ -138,6 +144,13 @@ class SearchUI:
         d = dir.Directory()
         self.path = d.show(initialdir=self.path)
 
+    # 2021-12-06
+    # add  get_list for select
+    def get_list(self):
+        if self.search_key.get():
+            result_data =  self.search_key.get()
+            if result_data:
+                win32api.ShellExecute(0, 'open', result_data, '', '', 1)
 
 if __name__ == '__main__':
     SearchUI()
